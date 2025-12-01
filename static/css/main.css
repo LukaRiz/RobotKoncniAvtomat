@@ -1,0 +1,592 @@
+/* main.css - Main stylesheet */
+
+/**
+ * Robot FSM - Glavni CSS
+ * Kognitivni trening chat vmesnik
+ * 
+ * Barve po specifikaciji:
+ * - Robot: #0066FF (modra)
+ * - User: #EEEEEE (svetlo siva)
+ * - Pozitivni: #D7E8FF
+ * - Nevtralni: #F2F2F2
+ * - Negativni: #FFD6D6
+ * - Zaključni: #D7FFD7
+ */
+
+/* ============================================
+   CSS SPREMENLJIVKE
+   ============================================ */
+   :root {
+    /* Barve */
+    --color-primary: #0066FF;
+    --color-primary-dark: #0052CC;
+    --color-primary-light: #3385FF;
+    
+    --color-bg: #F4F7FA;
+    --color-surface: #FFFFFF;
+    --color-border: #E0E6ED;
+    
+    --color-text-primary: #1A2B3C;
+    --color-text-secondary: #5A6B7C;
+    --color-text-muted: #8A9BAC;
+    
+    /* Robot sporočila */
+    --color-robot-bg: #0066FF;
+    --color-robot-text: #FFFFFF;
+    
+    /* User sporočila */
+    --color-user-bg: #EEEEEE;
+    --color-user-text: #333333;
+    
+    /* Trigger kategorije */
+    --color-positive-bg: #D7E8FF;
+    --color-positive-border: #80BFFF;
+    --color-positive-text: #003366;
+    --color-positive-hover: #C2DFFF;
+    
+    --color-neutral-bg: #F2F2F2;
+    --color-neutral-border: #CFCFCF;
+    --color-neutral-text: #333333;
+    --color-neutral-hover: #E5E5E5;
+    
+    --color-negative-bg: #FFD6D6;
+    --color-negative-border: #FF8A8A;
+    --color-negative-text: #990000;
+    --color-negative-hover: #FFC4C4;
+    
+    --color-final-bg: #D7FFD7;
+    --color-final-border: #90FF90;
+    --color-final-text: #004D00;
+    --color-final-hover: #C0FFC0;
+    
+    /* Velikosti */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 20px;
+    
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.12);
+    
+    /* Tipografija */
+    --font-family: 'Lexend', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-size-sm: 13px;
+    --font-size-base: 15px;
+    --font-size-md: 16px;
+    --font-size-lg: 18px;
+    --font-size-xl: 22px;
+    
+    /* Animacije */
+    --transition-fast: 150ms ease;
+    --transition-normal: 200ms ease;
+    --transition-slow: 300ms ease;
+}
+
+/* ============================================
+   RESET IN OSNOVNA PRAVILA
+   ============================================ */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    color: var(--color-text-primary);
+    background: var(--color-bg);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================
+   GLAVNI LAYOUT (60% - 40%)
+   ============================================ */
+#container {
+    display: flex;
+    height: 100vh;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 20px;
+    gap: 20px;
+}
+
+/* ============================================
+   CHAT PANEL (LEVI DEL)
+   ============================================ */
+#chat-panel {
+    flex: 0 0 60%;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-surface);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+}
+
+/* Chat Header */
+#chat-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 24px;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    color: white;
+}
+
+.header-icon {
+    font-size: 36px;
+    line-height: 1;
+}
+
+.header-text h1 {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.header-subtitle {
+    font-size: var(--font-size-sm);
+    opacity: 0.85;
+    font-weight: 300;
+}
+
+/* Chat Box - Scroll Area */
+#chat-box {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+    background: var(--color-surface);
+    scroll-behavior: smooth;
+}
+
+#chat-box::-webkit-scrollbar {
+    width: 6px;
+}
+
+#chat-box::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#chat-box::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 3px;
+}
+
+#chat-box::-webkit-scrollbar-thumb:hover {
+    background: var(--color-text-muted);
+}
+
+/* Sporočila */
+.message {
+    margin-bottom: 12px;
+    animation: fadeInUp var(--transition-normal) ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message-bubble {
+    max-width: 70%;
+    padding: 12px 16px;
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-md);
+    line-height: 1.5;
+    word-wrap: break-word;
+}
+
+/* Robot sporočila - levo */
+.robot-message {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.robot-message .message-bubble {
+    background: var(--color-robot-bg);
+    color: var(--color-robot-text);
+    border-bottom-left-radius: 4px;
+    box-shadow: var(--shadow-sm);
+}
+
+/* User sporočila - desno */
+.user-message {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.user-message .message-bubble {
+    background: var(--color-user-bg);
+    color: var(--color-user-text);
+    border-bottom-right-radius: 4px;
+    max-width: 60%;
+    font-size: var(--font-size-base);
+}
+
+/* Status Bar */
+#chat-status {
+    display: flex;
+    justify-content: space-around;
+    padding: 12px 24px;
+    background: linear-gradient(to right, #F8FAFC, #F1F5F9);
+    border-top: 1px solid var(--color-border);
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.status-label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    font-weight: 400;
+}
+
+.status-value {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+    font-weight: 600;
+    background: white;
+    padding: 3px 10px;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-sm);
+}
+
+/* ============================================
+   TRIGGER PANEL (DESNI DEL)
+   ============================================ */
+#trigger-panel {
+    flex: 0 0 38%;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-surface);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    padding: 24px;
+    overflow-y: auto;
+}
+
+#trigger-panel h3 {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 4px;
+    letter-spacing: -0.02em;
+}
+
+.trigger-hint {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    margin-bottom: 20px;
+}
+
+/* Trigger Groups */
+.trigger-group {
+    margin-bottom: 20px;
+    padding: 16px;
+    border-radius: var(--radius-md);
+    background: var(--color-bg);
+}
+
+.trigger-group h4 {
+    font-size: var(--font-size-base);
+    font-weight: 500;
+    margin-bottom: 12px;
+    color: var(--color-text-secondary);
+}
+
+/* Trigger Buttons - Common */
+.trigger-btn {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    border-radius: var(--radius-md);
+    border: 2px solid transparent;
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.trigger-btn:last-child {
+    margin-bottom: 0;
+}
+
+.trigger-btn:active {
+    transform: scale(0.98);
+}
+
+/* Pozitivni gumbi */
+.positive-btn {
+    background: var(--color-positive-bg);
+    border-color: var(--color-positive-border);
+    color: var(--color-positive-text);
+}
+
+.positive-btn:hover {
+    background: var(--color-positive-hover);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Nevtralni gumbi */
+.neutral-btn {
+    background: var(--color-neutral-bg);
+    border-color: var(--color-neutral-border);
+    color: var(--color-neutral-text);
+}
+
+.neutral-btn:hover {
+    background: var(--color-neutral-hover);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Negativni gumbi */
+.negative-btn {
+    background: var(--color-negative-bg);
+    border-color: var(--color-negative-border);
+    color: var(--color-negative-text);
+}
+
+.negative-btn:hover {
+    background: var(--color-negative-hover);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Zaključni gumbi */
+.final-btn {
+    background: var(--color-final-bg);
+    border-color: var(--color-final-border);
+    color: var(--color-final-text);
+}
+
+.final-btn:hover {
+    background: var(--color-final-hover);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Disabled state */
+.trigger-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Reset Container */
+.reset-container {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid var(--color-border);
+}
+
+#reset-session {
+    display: block;
+    width: 100%;
+    padding: 14px 20px;
+    background: #667788;
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+#reset-session:hover {
+    background: #556677;
+    box-shadow: var(--shadow-md);
+}
+
+#reset-session:active {
+    transform: scale(0.98);
+}
+
+/* ============================================
+   END NOTIFICATION
+   ============================================ */
+#end-notification {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn var(--transition-normal) ease-out;
+}
+
+#end-notification.hidden {
+    display: none;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.notification-content {
+    background: white;
+    padding: 40px 50px;
+    border-radius: var(--radius-xl);
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+    animation: scaleIn var(--transition-normal) ease-out;
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.notification-content h3 {
+    font-size: var(--font-size-xl);
+    margin-bottom: 10px;
+    color: var(--color-text-primary);
+}
+
+.notification-content p {
+    color: var(--color-text-secondary);
+    margin-bottom: 24px;
+}
+
+.notification-content button {
+    padding: 12px 32px;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.notification-content button:hover {
+    background: var(--color-primary-dark);
+}
+
+/* ============================================
+   LOADING STATE
+   ============================================ */
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid var(--color-primary);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+@media (max-width: 1200px) {
+    #container {
+        flex-direction: column;
+        padding: 10px;
+        gap: 10px;
+    }
+    
+    #chat-panel,
+    #trigger-panel {
+        flex: none;
+        width: 100%;
+    }
+    
+    #chat-panel {
+        height: 60vh;
+    }
+    
+    #trigger-panel {
+        height: 38vh;
+    }
+}
+
+@media (max-width: 768px) {
+    .message-bubble {
+        max-width: 85%;
+    }
+    
+    .user-message .message-bubble {
+        max-width: 80%;
+    }
+    
+    #chat-status {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .trigger-group {
+        padding: 12px;
+    }
+    
+    .trigger-btn {
+        padding: 10px 14px;
+        font-size: var(--font-size-sm);
+    }
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+.trigger-btn:focus,
+#reset-session:focus,
+.notification-content button:focus {
+    outline: 3px solid var(--color-primary-light);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
