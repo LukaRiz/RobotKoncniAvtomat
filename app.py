@@ -3,8 +3,8 @@
 from flask import Flask
 
 from config import Config
-from models import db
-from rules_loader import RuleEngine
+from db import db
+from core import RuleEngine
 
 # Ustvari Flask app
 app = Flask(__name__)

@@ -2,7 +2,8 @@
 
 from flask import Blueprint, render_template, jsonify
 
-from models import SessionLog, InteractionLog
+from db import SessionLog, InteractionLog
+from evaluation import generate_functional_evaluation, classify_session, get_all_scenarios
 
 evaluate_bp = Blueprint("evaluate", __name__)
 
@@ -34,6 +35,9 @@ def get_all_sessions():
         escalation_count = max([i.escalation_count for i in interactions], default=0)
         triggers_used = set([i.trigger for i in interactions])
         
+        # Klasifikacija scenarija
+        scenario_id, confidence = classify_session(interactions)
+        
         result.append({
             "id": s.id,
             "started_at": s.started_at.isoformat() if s.started_at else None,
@@ -43,6 +47,8 @@ def get_all_sessions():
             "triggers_used": list(triggers_used),
             "completed": s.ended_at is not None,
             "has_evaluation": s.rating_supportive is not None,
+            "scenario_type": scenario_id,
+            "scenario_confidence": round(confidence),
         })
     
     return jsonify(result)
@@ -51,7 +57,7 @@ def get_all_sessions():
 @evaluate_bp.route("/api/session/<int:session_id>", methods=["GET"])
 def get_session_details(session_id):
     """
-    Vrne podrobnosti posamezne seje.
+    Vrne podrobnosti posamezne seje vključno s funkcionalno evalvacijo.
     """
     session = SessionLog.query.get(session_id)
     if not session:
@@ -60,7 +66,7 @@ def get_session_details(session_id):
     interactions = InteractionLog.query.filter_by(session_id=session_id).order_by(InteractionLog.step_number).all()
     
     # Izračunaj statistiko
-    positive_intents = ["Engaged", "Positive Affect", "Acknowledgment", "Ready", "Completion"]
+    positive_intents = ["Engaged", "Positive Affect", "Acknowledgment", "Ready", "Completion", "Greeting"]
     negative_intents = ["Confusion", "Stress", "Frustration", "Disengagement", "Overload"]
     
     positive_count = sum(1 for i in interactions if i.inferred_intent in positive_intents)
@@ -77,6 +83,9 @@ def get_session_details(session_id):
         "positive_ratio": positive_count / total if total > 0 else 0,
         "unique_triggers": len(triggers_used),
     }
+    
+    # Funkcionalna evalvacija
+    functional_evaluation = generate_functional_evaluation(interactions)
     
     # Sestavi odgovor
     return jsonify({
@@ -105,4 +114,13 @@ def get_session_details(session_id):
             for i in interactions
         ],
         "statistics": statistics,
+        "functional_evaluation": functional_evaluation,
     })
+
+
+@evaluate_bp.route("/api/scenarios", methods=["GET"])
+def get_scenarios():
+    """
+    Vrne vse referenčne scenarije.
+    """
+    return jsonify(get_all_scenarios())

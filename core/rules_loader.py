@@ -1,4 +1,4 @@
-# rules_loader.py
+# core/rules_loader.py
 """
 RuleEngine z vsemi pravili iz robot_rules.xlsx.
 
@@ -203,3 +203,4 @@ class RuleEngine:
             "speech_act": row.get("Robot Speech Act"),
             "robot_text": row.get("RobotText"),
         }
+

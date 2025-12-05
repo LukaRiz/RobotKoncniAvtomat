@@ -360,3 +360,160 @@ body {
     font-size: 14px;
     margin: 0;
 }
+
+/* ============================================
+   FUNKCIONALNA EVALVACIJA
+   ============================================ */
+
+.functional-section {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    margin-bottom: 24px;
+    border: 2px solid #7dd3fc;
+}
+
+.scenario-badge {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.scenario-icon {
+    font-size: 48px;
+    line-height: 1;
+}
+
+.scenario-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.scenario-name {
+    font-size: 20px;
+    font-weight: 600;
+    color: #0369a1;
+}
+
+.scenario-confidence {
+    font-size: 14px;
+    color: #0284c7;
+}
+
+.scenario-description {
+    font-size: 14px;
+    color: #475569;
+    margin: 0;
+}
+
+/* Scenarij barvne variante */
+.scenario-badge.scenario-calm {
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border-color: #86efac;
+}
+.scenario-badge.scenario-calm .scenario-name { color: #166534; }
+.scenario-badge.scenario-calm .scenario-confidence { color: #22c55e; }
+
+.scenario-badge.scenario-confused {
+    background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%);
+    border-color: #fde047;
+}
+.scenario-badge.scenario-confused .scenario-name { color: #854d0e; }
+.scenario-badge.scenario-confused .scenario-confidence { color: #eab308; }
+
+.scenario-badge.scenario-distracted {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border-color: #7dd3fc;
+}
+.scenario-badge.scenario-distracted .scenario-name { color: #0369a1; }
+.scenario-badge.scenario-distracted .scenario-confidence { color: #0ea5e9; }
+
+.scenario-badge.scenario-stressed {
+    background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+    border-color: #fdba74;
+}
+.scenario-badge.scenario-stressed .scenario-name { color: #c2410c; }
+.scenario-badge.scenario-stressed .scenario-confidence { color: #f97316; }
+
+.scenario-badge.scenario-critical {
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    border-color: #fca5a5;
+}
+.scenario-badge.scenario-critical .scenario-name { color: #991b1b; }
+.scenario-badge.scenario-critical .scenario-confidence { color: #ef4444; }
+
+/* FSM Metrike */
+.fsm-metrics-section {
+    margin-bottom: 24px;
+}
+
+.fsm-metrics-section h3 {
+    font-size: 16px;
+    margin-bottom: 12px;
+    color: var(--color-text-primary);
+}
+
+.fsm-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.fsm-metric {
+    background: var(--color-bg);
+    border-radius: var(--radius-md);
+    padding: 14px;
+    text-align: center;
+}
+
+.fsm-metric-value {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--color-primary);
+    margin-bottom: 4px;
+}
+
+.fsm-metric-label {
+    font-size: 11px;
+    color: var(--color-text-muted);
+    margin-bottom: 8px;
+}
+
+.fsm-metric-bar {
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.fsm-metric-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6, #10b981);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+
+/* Session item razširitev */
+.session-main {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.session-scenario-badge {
+    font-size: 24px;
+    line-height: 1;
+}
+
+/* h3 stili */
+#session-details h3 {
+    font-size: 16px;
+    margin-bottom: 12px;
+    margin-top: 0;
+    color: var(--color-text-primary);
+}
+
+#session-details h3:not(:first-child) {
+    margin-top: 24px;
+}

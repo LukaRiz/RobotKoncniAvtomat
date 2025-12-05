@@ -1,8 +1,8 @@
-# helpers.py - Pomožne funkcije za upravljanje seje, FSM in pogovora
+# helpers/helpers.py - Pomožne funkcije za upravljanje seje, FSM in pogovora
 
 from flask import session as flask_session
-from models import db, SessionLog
-from fsm import RobotFSM
+from db import db, SessionLog
+from core import RobotFSM
 
 
 def get_or_create_session():

@@ -1,4 +1,4 @@
-# fsm.py - Finite State Machine implementation
+# core/fsm.py - Finite State Machine implementation
 
 from dataclasses import dataclass, field
 from collections import defaultdict
@@ -183,3 +183,4 @@ class RobotFSM:
             S4_FEEDBACK: {"name": "Zaključek", "color": "teal", "icon": "✅"},
         }
         return state_descriptions.get(self.state, {"name": "Neznano", "color": "gray", "icon": "❓"})
+

@@ -1,4 +1,5 @@
-# models.py
+# db/models.py - SQLAlchemy modeli
+
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 
@@ -40,3 +41,4 @@ class InteractionLog(db.Model):
     priority = db.Column(db.String(50), nullable=True)
 
     escalation_count = db.Column(db.Integer, default=0)
+

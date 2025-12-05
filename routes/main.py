@@ -4,8 +4,8 @@ from datetime import datetime
 
 from flask import Blueprint, render_template, request, jsonify, session as flask_session
 
-from models import db, SessionLog, InteractionLog
-from fsm import RobotFSM
+from db import db, SessionLog, InteractionLog
+from core import RobotFSM
 from helpers import (
     get_or_create_session,
     get_fsm,
