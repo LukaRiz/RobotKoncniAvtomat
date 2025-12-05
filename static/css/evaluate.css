@@ -1,0 +1,362 @@
+/* evaluate.css - Stili za pregled sej */
+
+body {
+    overflow: auto;
+}
+
+#eval-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+.eval-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.eval-header h1 {
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    color: var(--color-text-secondary);
+    font-weight: 500;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-fast);
+}
+
+.back-link:hover {
+    background: var(--color-primary);
+    color: white;
+}
+
+.eval-grid {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: 24px;
+}
+
+@media (max-width: 1000px) {
+    .eval-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.eval-panel {
+    background: var(--color-surface);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    padding: 24px;
+}
+
+.eval-panel h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--color-text-primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.panel-desc {
+    color: var(--color-text-muted);
+    font-size: 14px;
+    margin-bottom: 16px;
+}
+
+/* Seznam sej */
+.session-list {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+
+.session-item {
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    background: var(--color-bg);
+    border-radius: var(--radius-md);
+    border: 2px solid transparent;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.session-item:hover {
+    border-color: var(--color-primary);
+    transform: translateX(4px);
+}
+
+.session-item.selected {
+    border-color: var(--color-primary);
+    background: #eff6ff;
+}
+
+.session-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.session-id {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.session-date {
+    font-size: 12px;
+    color: var(--color-text-muted);
+}
+
+.session-stats {
+    display: flex;
+    gap: 16px;
+}
+
+.session-stat {
+    text-align: center;
+}
+
+.session-stat-value {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.session-stat-label {
+    font-size: 10px;
+    color: var(--color-text-muted);
+}
+
+.session-badges {
+    display: flex;
+    gap: 6px;
+}
+
+.completed-badge {
+    padding: 4px 10px;
+    font-size: 11px;
+    border-radius: 10px;
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.incomplete-badge {
+    padding: 4px 10px;
+    font-size: 11px;
+    border-radius: 10px;
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.eval-badge {
+    padding: 4px 10px;
+    font-size: 11px;
+    border-radius: 10px;
+    background: #fef9c3;
+    color: #854d0e;
+}
+
+.loading-text, .empty-text, .error-text {
+    color: var(--color-text-muted);
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.error-text {
+    color: #dc2626;
+}
+
+/* Podrobnosti seje */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--color-text-muted);
+}
+
+.empty-icon {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Metrike */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.metric-card {
+    padding: 16px;
+    background: var(--color-bg);
+    border-radius: var(--radius-md);
+    text-align: center;
+}
+
+.metric-value {
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.metric-label {
+    font-size: 12px;
+    color: var(--color-text-muted);
+}
+
+.metric-card.success .metric-value { color: #10b981; }
+.metric-card.warning .metric-value { color: #f59e0b; }
+.metric-card.danger .metric-value { color: #ef4444; }
+
+/* Uporabniška evalvacija */
+.evaluation-section {
+    background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%);
+    border-radius: var(--radius-md);
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    border: 1px solid #fde047;
+}
+
+.evaluation-section h3 {
+    font-size: 16px;
+    margin-bottom: 12px;
+    color: #854d0e;
+}
+
+.rating-display {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.rating-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.rating-label {
+    font-size: 14px;
+    color: #92400e;
+    min-width: 100px;
+}
+
+.rating-stars .stars {
+    color: #eab308;
+    font-size: 18px;
+    letter-spacing: 2px;
+}
+
+.rating-num {
+    font-size: 12px;
+    color: var(--color-text-muted);
+}
+
+.no-eval-notice {
+    background: var(--color-bg);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    text-align: center;
+    color: var(--color-text-muted);
+    font-size: 14px;
+    margin-bottom: 24px;
+}
+
+/* Potek seje */
+.trace-title {
+    font-size: 16px;
+    margin-bottom: 12px;
+    color: var(--color-text-primary);
+}
+
+.trace-container {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+}
+
+.trace-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.trace-table th, .trace-table td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.trace-table th {
+    background: var(--color-bg);
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    position: sticky;
+    top: 0;
+}
+
+.trace-table tr:hover {
+    background: #f8fafc;
+}
+
+.state-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 11px;
+    border-radius: 10px;
+    background: #e2e8f0;
+}
+
+.state-badge.final {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+/* Povzetek */
+.eval-summary {
+    padding: 20px;
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border-radius: var(--radius-md);
+    border: 2px solid #86efac;
+}
+
+.eval-summary.failed {
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    border-color: #fca5a5;
+}
+
+.eval-summary h3 {
+    margin-bottom: 8px;
+    color: #166534;
+    font-size: 16px;
+}
+
+.eval-summary.failed h3 {
+    color: #991b1b;
+}
+
+.eval-summary p {
+    color: var(--color-text-secondary);
+    font-size: 14px;
+    margin: 0;
+}

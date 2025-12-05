@@ -1,5 +1,3 @@
-# models.py - Data models
-
 # models.py
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
@@ -13,6 +11,12 @@ class SessionLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     started_at = db.Column(db.DateTime, default=datetime.utcnow)
     ended_at = db.Column(db.DateTime, nullable=True)
+
+    # Uporabniška evalvacija (1-5 Likert)
+    rating_supportive = db.Column(db.Integer, nullable=True)      # Robot je podporen
+    rating_understandable = db.Column(db.Integer, nullable=True)  # Robot je razumljiv
+    rating_non_intrusive = db.Column(db.Integer, nullable=True)   # Robot je nevsiljiv
+    evaluated_at = db.Column(db.DateTime, nullable=True)
 
     interactions = db.relationship("InteractionLog", backref="session", lazy=True)
 
