@@ -184,3 +184,5 @@ class RobotFSM:
         }
         return state_descriptions.get(self.state, {"name": "Neznano", "color": "gray", "icon": "❓"})
 
+
+
