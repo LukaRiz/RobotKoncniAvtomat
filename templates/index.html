@@ -1,5 +1,3 @@
-<!-- index.html - Jinja template -->
-
 <!DOCTYPE html>
 <html lang="sl">
 <head>
@@ -7,183 +5,177 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Robot – Kognitivni Trening</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-    <!-- Google Fonts - Lexend za lepšo tipografijo -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
-<body>
-    <div id="container">
-        <!-- LEVI DEL - CHAT OKNO -->
-        <div id="chat-panel">
-            <div id="chat-header">
-                <div class="header-icon">🤖</div>
-                <div class="header-text">
-                    <h1>Robot – Kognitivni Trening</h1>
-                    <span class="header-subtitle">Interaktivna simulacija</span>
+<body class="chat-page">
+    <div class="chat-shell">
+
+        <!-- LEVI STOLPEC - TRIGGERJI -->
+        <aside class="sidebar-left" id="trigger-panel">
+
+            <div class="trigger-section">
+                <div class="trigger-heading">
+                    <span class="heading-dot positive-dot"></span>
+                    <h4>✨ Pozitivni signali</h4>
                 </div>
-                <!-- Povezava do evalvacije -->
-                <a href="/evaluate" class="eval-link" title="Evalvacija">📊</a>
-            </div>
-            
-            <!-- FSM DIAGRAM -->
-            <div id="fsm-diagram">
-                <div class="fsm-state {{ 'active' if current_state == 'S0_GREETING' else '' }}" data-state="S0_GREETING">
-                    <span class="state-icon">👋</span>
-                    <span class="state-name">Pozdrav</span>
-                </div>
-                <div class="fsm-arrow">→</div>
-                <div class="fsm-state {{ 'active' if current_state == 'S1_EXPLANATION' else '' }}" data-state="S1_EXPLANATION">
-                    <span class="state-icon">📖</span>
-                    <span class="state-name">Razlaga</span>
-                </div>
-                <div class="fsm-arrow">→</div>
-                <div class="fsm-state {{ 'active' if current_state == 'S2_EXERCISE' else '' }}" data-state="S2_EXERCISE">
-                    <span class="state-icon">🎯</span>
-                    <span class="state-name">Vaja</span>
-                </div>
-                <div class="fsm-arrow-down">↓</div>
-                <div class="fsm-state {{ 'active' if current_state == 'S3_BREAK' else '' }}" data-state="S3_BREAK">
-                    <span class="state-icon">☕</span>
-                    <span class="state-name">Odmor</span>
-                </div>
-                <div class="fsm-arrow">→</div>
-                <div class="fsm-state final {{ 'active' if current_state == 'S4_FEEDBACK' else '' }}" data-state="S4_FEEDBACK">
-                    <span class="state-icon">✅</span>
-                    <span class="state-name">Zaključek</span>
+                <div class="trigger-grid">
+                    {% if triggers.positive %}
+                        {% for trigger in triggers.positive %}
+                        <button class="trigger-pill positive" onclick="sendTrigger('{{ trigger }}')">
+                            {{ trigger }}
+                        </button>
+                        {% endfor %}
+                    {% else %}
+                        <button class="trigger-pill positive" onclick="sendTrigger('User smiles / laughs')">User smiles / laughs</button>
+                        <button class="trigger-pill positive" onclick="sendTrigger('Positive affect')">Positive affect</button>
+                    {% endif %}
                 </div>
             </div>
-            
-            <div id="chat-box">
+
+            <div class="trigger-section">
+                <div class="trigger-heading">
+                    <span class="heading-dot neutral-dot"></span>
+                    <h4>⏸️ Nevtralni signali</h4>
+                </div>
+                <div class="trigger-grid">
+                    {% if triggers.neutral %}
+                        {% for trigger in triggers.neutral %}
+                        <button class="trigger-pill neutral" onclick="sendTrigger('{{ trigger }}')">
+                            {{ trigger }}
+                        </button>
+                        {% endfor %}
+                    {% else %}
+                        <button class="trigger-pill neutral" onclick="sendTrigger('Long silence')">Long silence</button>
+                        <button class="trigger-pill neutral" onclick="sendTrigger('User confused / waiting')">User confused / waiting</button>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="trigger-section">
+                <div class="trigger-heading">
+                    <span class="heading-dot negative-dot"></span>
+                    <h4>⚠️ Negativni signali</h4>
+                </div>
+                <div class="trigger-grid">
+                    {% if triggers.negative %}
+                        {% for trigger in triggers.negative %}
+                        <button class="trigger-pill negative" onclick="sendTrigger('{{ trigger }}')">
+                            {{ trigger }}
+                        </button>
+                        {% endfor %}
+                    {% else %}
+                        <button class="trigger-pill negative" onclick="sendTrigger('User frustrated / overloaded')">User frustrated / overloaded</button>
+                        <button class="trigger-pill negative" onclick="sendTrigger('User decreasing engagement')">User decreasing engagement</button>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="trigger-section">
+                <div class="trigger-heading">
+                    <span class="heading-dot final-dot"></span>
+                    <h4>🏁 Zaključni signali</h4>
+                </div>
+                <div class="trigger-grid">
+                    {% if triggers.final %}
+                        {% for trigger in triggers.final %}
+                        <button class="trigger-pill final" onclick="sendTrigger('{{ trigger }}')">
+                            {{ trigger }}
+                        </button>
+                        {% endfor %}
+                    {% else %}
+                        <button class="trigger-pill final" onclick="sendTrigger('end of user speech')">end of user speech</button>
+                        <button class="trigger-pill final" onclick="sendTrigger('end of user movement')">end of user movement</button>
+                    {% endif %}
+                </div>
+            </div>
+        </aside>
+
+        <!-- GLAVNI DEL - CHAT -->
+        <main class="main-content">
+            <header class="chat-header">
+                <div class="header-top">
+                    <div class="header-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.75 17L9 20l-1 1h8l-1-1 .75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                    <div>
+                        <div class="header-title">Robot – Kognitivni Trening</div>
+                        <div class="header-subtitle">Interaktivni pogovor in sledenje stanj</div>
+                    </div>
+                </div>
+
+
+                <div class="progress-container">
+
+                    <div class="progress-states">
+                        <div class="fsm-state {{ 'active' if current_state == 'S0_GREETING' else '' }}" data-state="S0_GREETING">Pozdrav</div>
+                        <div class="fsm-state {{ 'active' if current_state == 'S1_EXPLANATION' else '' }}" data-state="S1_EXPLANATION">Razlaga</div>
+                        <div class="fsm-state {{ 'active' if current_state == 'S2_EXERCISE' else '' }}" data-state="S2_EXERCISE">Vaja</div>
+                        <div class="fsm-state {{ 'active' if current_state == 'S3_BREAK' else '' }}" data-state="S3_BREAK">Odmor</div>
+                        <div class="fsm-state {{ 'active' if current_state == 'S4_FEEDBACK' else '' }}" data-state="S4_FEEDBACK">Zaključek</div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="chat-area" id="chat-box">
                 {% for message in conversation %}
-                <div class="message {{ message.sender }}-message {% if message.get('type') %}{{ message.type }}-type{% endif %}">
-                    <div class="message-bubble">{{ message.text }}</div>
+                <div class="message {{ 'robot-message' if message.sender == 'robot' else 'user-message' }} {% if message.get('type') %}{{ message.type }}-type{% endif %}">
+                    <div class="message-bubble">
+                        {{ message.text }}
+                    </div>
                 </div>
                 {% endfor %}
             </div>
-            
-            <!-- STATISTIKA SEJE -->
-            <div id="session-stats">
-                <div class="stat-item positive">
-                    <span class="stat-icon">😊</span>
-                    <span class="stat-value" id="stat-positive">{{ statistics.positive_interactions }}</span>
+
+            <footer class="stats-footer">
+                <div class="stat-box">
+                    <span class="stat-number" id="stat-positive">{{ statistics.positive_interactions }}</span>
                     <span class="stat-label">Pozitivnih</span>
                 </div>
-                <div class="stat-item negative">
-                    <span class="stat-icon">😟</span>
-                    <span class="stat-value" id="stat-negative">{{ statistics.negative_interactions }}</span>
+                <div class="stat-box">
+                    <span class="stat-number" id="stat-negative">{{ statistics.negative_interactions }}</span>
                     <span class="stat-label">Negativnih</span>
                 </div>
-                <div class="stat-item escalation">
-                    <span class="stat-icon">⚠️</span>
-                    <span class="stat-value" id="stat-escalation">{{ statistics.total_escalations }}</span>
+                <div class="stat-box">
+                    <span class="stat-number" id="stat-escalation">{{ statistics.total_escalations }}</span>
                     <span class="stat-label">Eskalacij</span>
                 </div>
-                <div class="stat-item steps">
-                    <span class="stat-icon">👣</span>
-                    <span class="stat-value" id="stat-steps">{{ statistics.step_count }}</span>
+                <div class="stat-box">
+                    <span class="stat-number" id="stat-steps">{{ statistics.step_count }}</span>
                     <span class="stat-label">Korakov</span>
                 </div>
-                <div class="stat-item success">
-                    <span class="stat-icon">🎯</span>
-                    <span class="stat-value" id="stat-success">{{ statistics.success_steps }}/5</span>
+                <div class="stat-box">
+                    <span class="stat-number" id="stat-success">{{ statistics.success_steps }}/5</span>
                     <span class="stat-label">Uspešnih</span>
                 </div>
-            </div>
-        </div>
-        
-        <!-- DESNI DEL - TRIGGER PANEL -->
-        <div id="trigger-panel">
-            <h3>Simuliraj Trigger</h3>
-            <p class="trigger-hint">Kliknite na trigger za simulacijo uporabnikovega vedenja</p>
-            
-            <!-- TRENUTNO STANJE -->
-            <div id="current-state-display" class="state-{{ state_info.color }}">
-                <span class="state-display-icon">{{ state_info.icon }}</span>
-                <div class="state-display-text">
-                    <span class="state-display-label">Trenutno stanje:</span>
-                    <span class="state-display-name" id="current-state-name">{{ state_info.name }}</span>
-                </div>
-            </div>
-            
-            <!-- POZITIVNI TRIGGERJI -->
-            <div class="trigger-group positive">
-                <h4>✨ Pozitivni signali</h4>
-                {% if triggers.positive %}
-                    {% for trigger in triggers.positive %}
-                    <button class="trigger-btn positive-btn" onclick="sendTrigger('{{ trigger }}')">
-                        {{ trigger }}
-                    </button>
-                    {% endfor %}
-                {% else %}
-                    <button class="trigger-btn positive-btn" onclick="sendTrigger('User smiles / laughs')">User smiles / laughs</button>
-                    <button class="trigger-btn positive-btn" onclick="sendTrigger('Positive affect')">Positive affect</button>
-                {% endif %}
-            </div>
-            
-            <!-- NEVTRALNI TRIGGERJI -->
-            <div class="trigger-group neutral">
-                <h4>⏸️ Nevtralni signali</h4>
-                {% if triggers.neutral %}
-                    {% for trigger in triggers.neutral %}
-                    <button class="trigger-btn neutral-btn" onclick="sendTrigger('{{ trigger }}')">
-                        {{ trigger }}
-                    </button>
-                    {% endfor %}
-                {% else %}
-                    <button class="trigger-btn neutral-btn" onclick="sendTrigger('Long silence')">Long silence</button>
-                    <button class="trigger-btn neutral-btn" onclick="sendTrigger('User confused / waiting')">User confused / waiting</button>
-                {% endif %}
-            </div>
-            
-            <!-- NEGATIVNI TRIGGERJI -->
-            <div class="trigger-group negative">
-                <h4>⚠️ Negativni signali</h4>
-                {% if triggers.negative %}
-                    {% for trigger in triggers.negative %}
-                    <button class="trigger-btn negative-btn" onclick="sendTrigger('{{ trigger }}')">
-                        {{ trigger }}
-                    </button>
-                    {% endfor %}
-                {% else %}
-                    <button class="trigger-btn negative-btn" onclick="sendTrigger('User frustrated / overloaded')">User frustrated / overloaded</button>
-                    <button class="trigger-btn negative-btn" onclick="sendTrigger('User decreasing engagement')">User decreasing engagement</button>
-                {% endif %}
-            </div>
-            
-            <!-- ZAKLJUČNI TRIGGERJI -->
-            <div class="trigger-group final">
-                <h4>🏁 Zaključni signali</h4>
-                {% if triggers.final %}
-                    {% for trigger in triggers.final %}
-                    <button class="trigger-btn final-btn" onclick="sendTrigger('{{ trigger }}')">
-                        {{ trigger }}
-                    </button>
-                    {% endfor %}
-                {% else %}
-                    <button class="trigger-btn final-btn" onclick="sendTrigger('end of user speech')">end of user speech</button>
-                    <button class="trigger-btn final-btn" onclick="sendTrigger('end of user movement')">end of user movement</button>
-                {% endif %}
-            </div>
-            
-            <!-- KONTROLNI GUMBI -->
-            <div class="control-buttons">
-                <button id="force-end-btn" onclick="forceEnd()" class="control-btn end-btn">
-                    🛑 Zaključi sejo
-                </button>
-                <button id="reset-session" onclick="resetSession()" class="control-btn reset-btn">
-                    🔄 Nova seja
-                </button>
-            </div>
-        </div>
+            </footer>
+        </main>
+
+        <!-- DESNI STOLPEC - KONTROLA -->
+        <aside class="sidebar-right">
+            <h3 class="sidebar-title">Kontrola seje</h3>
+
+            <button class="control-btn btn-end" id="force-end-btn" onclick="forceEnd()">
+                <svg viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Zaključi sejo
+            </button>
+
+            <button class="control-btn btn-normal" id="reset-session" onclick="resetSession()">
+                <svg viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Nova seja
+            </button>
+
+            <a class="control-btn btn-normal link-btn" href="/evaluate">
+                <svg viewBox="0 0 24 24"><path d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Statistika
+            </a>
+        </aside>
     </div>
-    
+
     <!-- Notification za END stanje z evalvacijo -->
     <div id="end-notification" class="hidden">
         <div class="notification-content evaluation-modal">
             <h3>🎉 Seja zaključena</h3>
             <p id="end-reason-text">Trening je bil uspešno zaključen.</p>
-            
+
             <div id="final-stats">
                 <div class="final-stat">
                     <span class="final-stat-label">Koraki:</span>
@@ -198,11 +190,11 @@
                     <span class="final-stat-value" id="final-escalation">0</span>
                 </div>
             </div>
-            
+
             <!-- Evalvacija uporabnika -->
             <div id="evaluation-section">
                 <h4>⭐ Oceni interakcijo z robotom</h4>
-                
+
                 <div class="eval-question">
                     <label>Robot se mi zdi <strong>podporen</strong></label>
                     <div class="star-rating" data-question="supportive">
@@ -213,7 +205,7 @@
                         <span class="star" data-value="5">☆</span>
                     </div>
                 </div>
-                
+
                 <div class="eval-question">
                     <label>Robot se mi zdi <strong>razumljiv</strong></label>
                     <div class="star-rating" data-question="understandable">
@@ -224,7 +216,7 @@
                         <span class="star" data-value="5">☆</span>
                     </div>
                 </div>
-                
+
                 <div class="eval-question">
                     <label>Robot se mi zdi <strong>nevsiljiv</strong></label>
                     <div class="star-rating" data-question="non_intrusive">
@@ -236,7 +228,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="modal-buttons">
                 <button onclick="submitEvaluation()" id="submit-eval-btn" class="btn-primary">
                     Oddaj oceno in začni novo sejo
@@ -247,7 +239,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Notification za predlog zaključka -->
     <div id="suggest-end-notification" class="hidden">
         <div class="notification-content warning">
@@ -259,7 +251,7 @@
             </div>
         </div>
     </div>
-    
+
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>

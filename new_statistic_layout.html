@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistika Seje</title>
+    <style>
+        /* --- OSNOVNE NASTAVITVE --- */
+        :root {
+            --bg-body: #F1F5F9; /* Svetlo sivo-modro ozadje */
+            --bg-white: #ffffff;
+            --primary-blue: #3B82F6;
+            --primary-blue-light: #EFF6FF;
+            --primary-blue-text: #1D4ED8;
+            --text-dark: #1E293B;
+            --text-gray: #64748B;
+            --border-color: #E2E8F0;
+            --success-green: #22C55E;
+            --tag-bg-blue: #DBEAFE;
+            --tag-text-blue: #1E40AF;
+            --tag-bg-green: #DCFCE7;
+            --tag-text-green: #166534;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            background-color: var(--bg-body);
+            color: var(--text-dark);
+            overflow: hidden; /* Prepreči dvojni scrollbar */
+        }
+
+        /* --- ICONS --- */
+        svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        /* --- 1. LEVI STOLPEC (SIDEBAR) --- */
+        .sidebar {
+            width: 320px;
+            background-color: var(--bg-white);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--text-gray);
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .page-title-main {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .sidebar-section {
+            padding: 20px;
+        }
+
+        .section-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .section-subtitle {
+            font-size: 12px;
+            color: var(--text-gray);
+            margin-bottom: 15px;
+        }
+
+        .session-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .session-item {
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .session-item:hover {
+            background-color: #f8fafc;
+        }
+
+        /* Selected Session Style */
+        .session-item.active {
+            background-color: var(--primary-blue-light);
+            border: 2px solid var(--primary-blue);
+        }
+
+        .session-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 5px;
+        }
+
+        .session-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .session-date {
+            font-size: 11px;
+            color: var(--text-gray);
+            margin-top: 2px;
+        }
+
+        .session-stats-grid {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .mini-stat {
+            text-align: center;
+        }
+
+        .mini-stat-val {
+            font-weight: 700;
+            font-size: 14px;
+            display: block;
+        }
+
+        .mini-stat-label {
+            font-size: 10px;
+            color: var(--text-gray);
+        }
+
+        /* Standard (non-active) session row */
+        .session-row-simple {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .session-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .session-metrics {
+            display: flex;
+            gap: 15px;
+            font-size: 13px;
+            font-weight: 500;
+            align-items: center;
+        }
+
+        .check-icon {
+            color: var(--success-green);
+        }
+
+        /* --- 2. GLAVNA VSEBINA (MAIN CONTENT) --- */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr; /* Levo širše, desno ožje */
+            grid-template-rows: auto auto 1fr; /* Vrstice */
+            gap: 20px;
+        }
+
+        /* TOP CARD (Status) - Spans full width */
+        .status-card {
+            grid-column: 1 / -1;
+            background: var(--bg-white);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .status-icon-box {
+            width: 48px;
+            height: 48px;
+            background-color: var(--primary-blue-light);
+            color: var(--primary-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .status-icon-box svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .status-text h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .status-text p {
+            color: var(--text-gray);
+            font-size: 14px;
+        }
+
+        /* CARD STYLES GENERIC */
+        .card {
+            background: var(--bg-white);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        /* FSM METRIKE (Grid of 4) */
+        .fsm-grid {
+            display: flex;
+            gap: 10px;
+        }
+
+        .fsm-box {
+            flex: 1;
+            background-color: #F8FAFC;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fsm-label {
+            font-size: 12px;
+            color: var(--text-gray);
+            margin-bottom: 8px;
+        }
+
+        .fsm-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 8px;
+        }
+
+        .fsm-value.black {
+            color: var(--text-dark);
+        }
+
+        .progress-bar {
+            width: 60px;
+            height: 4px;
+            background-color: #E2E8F0;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary-blue);
+        }
+
+        /* POTEK SEJE (Table) */
+        .table-container {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .table-container th {
+            text-align: left;
+            padding: 12px;
+            background-color: #F8FAFC;
+            color: var(--text-gray);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table-container td {
+            padding: 16px 12px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        .table-container tr:last-child td {
+            border-bottom: none;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .tag-blue { background-color: var(--tag-bg-blue); color: var(--tag-text-blue); }
+        .tag-green { background-color: var(--tag-bg-green); color: var(--tag-text-green); }
+
+        /* OSNOVNE METRIKE (Right Side Grid) */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .metric-box {
+            background-color: #F8FAFC;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 80px;
+        }
+
+        .metric-val {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .metric-val.green { color: var(--success-green); }
+        .metric-val.red { color: #EF4444; }
+
+        .metric-lbl {
+            font-size: 11px;
+            color: var(--text-gray);
+        }
+
+        /* SUBJEKTIVNA OCENA */
+        .rating-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .rating-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: var(--text-gray);
+        }
+
+        .stars {
+            display: flex;
+            gap: 2px;
+            align-items: center;
+        }
+
+        .star-filled { color: #3B82F6; }
+        .star-empty { color: #E2E8F0; }
+        
+        .rating-score {
+            font-size: 12px;
+            color: #94A3B8;
+            margin-left: 8px;
+            width: 30px;
+            text-align: right;
+        }
+
+        /* POVZETEK EVALVACIJE (Blue Box) */
+        .summary-box {
+            background-color: var(--primary-blue-light);
+            border: 1px solid #BFDBFE;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: auto; /* Push to bottom if space allows */
+        }
+
+        .summary-title {
+            color: var(--primary-blue-text);
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .summary-text {
+            color: var(--primary-blue-text);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 1000px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="back-btn">
+                <svg viewBox="0 0 24 24"><path d="M19 12H5m7 7l-7-7 7-7" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Nazaj
+            </div>
+            <div class="page-title-main">
+                <svg viewBox="0 0 24 24" style="color:var(--primary-blue)"><path d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Statistika Seje
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <h3 class="section-title">Pretekle seje</h3>
+            <p class="section-subtitle">Klikni na sejo za strokovno evalvacijo.</p>
+
+            <div class="session-list">
+                <!-- ACTIVE SESSION -->
+                <div class="session-item active">
+                    <div class="session-header">
+                        <div>
+                            <div class="session-name">Seja #24</div>
+                            <div class="session-date">5. dec. 2025, 21:50</div>
+                        </div>
+                        <svg viewBox="0 0 24 24" style="color:var(--primary-blue);"><path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+                    </div>
+                    <div class="session-stats-grid">
+                        <div class="mini-stat">
+                            <span class="mini-stat-val">3</span>
+                            <span class="mini-stat-label">Korakov</span>
+                        </div>
+                        <div class="mini-stat">
+                            <span class="mini-stat-val">0</span>
+                            <span class="mini-stat-label">Eskalacij</span>
+                        </div>
+                        <div class="mini-stat">
+                            <span class="mini-stat-val">67%</span>
+                            <span class="mini-stat-label">Ujemanje</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OTHER SESSIONS -->
+                <div class="session-item">
+                    <div class="session-row-simple">
+                        <div class="session-info">
+                            <span class="session-name">Seja #23</span>
+                            <span class="session-date">5. dec. 2025, 21:54</span>
+                        </div>
+                        <div class="session-metrics">
+                            <span>3</span>
+                            <span>0</span>
+                            <span>67%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="session-item">
+                    <div class="session-row-simple">
+                        <div class="session-info">
+                            <span class="session-name">Seja #22</span>
+                            <span class="session-date">5. dec. 2025, 21:22</span>
+                        </div>
+                        <div class="session-metrics">
+                            <span>3</span>
+                            <span>0</span>
+                            <span>67%</span>
+                            <svg class="check-icon" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" fill="currentColor"/></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="session-item">
+                    <div class="session-row-simple">
+                        <div class="session-info">
+                            <span class="session-name">Seja #21</span>
+                            <span class="session-date">5. dec. 2025, 21:06</span>
+                        </div>
+                        <div class="session-metrics">
+                            <span>7</span>
+                            <span>0</span>
+                            <span>67%</span>
+                            <svg class="check-icon" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" fill="currentColor"/></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="session-item">
+                    <div class="session-row-simple">
+                        <div class="session-info">
+                            <span class="session-name">Seja #20</span>
+                            <span class="session-date">5. dec. 2025, 20:58</span>
+                        </div>
+                        <div class="session-metrics">
+                            <span>6</span>
+                            <span>0</span>
+                            <span>67%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        
+        <!-- STATUS CARD -->
+        <div class="status-card">
+            <div class="status-icon-box">
+                <svg viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="status-text">
+                <h2>Status seje: Mirna seja</h2>
+                <p>Uporabnik je pozitive in sodelujoč skozi celoten trening.</p>
+            </div>
+        </div>
+
+        <!-- LEFT COLUMN -->
+        <div style="display:flex; flex-direction:column; gap:20px;">
+            
+            <!-- FSM METRIKE -->
+            <div class="card">
+                <div class="card-header">
+                    <svg style="color:var(--primary-blue)" viewBox="0 0 24 24"><path d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h1m5 0h1" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    FSM Metrike
+                </div>
+                <div class="fsm-grid">
+                    <div class="fsm-box">
+                        <span class="fsm-label">Linearnost</span>
+                        <span class="fsm-value">100%</span>
+                        <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+                    </div>
+                    <div class="fsm-box">
+                        <span class="fsm-label">Učinkovitost</span>
+                        <span class="fsm-value">100%</span>
+                        <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+                    </div>
+                    <div class="fsm-box">
+                        <span class="fsm-label">Napredovanje</span>
+                        <span class="fsm-value black">3</span>
+                    </div>
+                    <div class="fsm-box">
+                        <span class="fsm-label">Povratki</span>
+                        <span class="fsm-value black">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- POTEK SEJE TABLE -->
+            <div class="card" style="flex:1;">
+                <div class="card-header">
+                    <svg style="color:var(--primary-blue)" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Potek seje
+                </div>
+                <table class="table-container">
+                    <thead>
+                        <tr>
+                            <th style="width:40px;">#</th>
+                            <th>Trigger</th>
+                            <th>Intent</th>
+                            <th>Stanje</th>
+                            <th style="text-align:right;">Eskalacije</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>assist</td>
+                            <td>Request to speak/help</td>
+                            <td><span class="tag tag-blue">S1_EXPLANATION</span></td>
+                            <td style="text-align:right;">0</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>end of user speech</td>
+                            <td>Provide action / speech feedback</td>
+                            <td><span class="tag tag-blue">S2_EXERCISE</span></td>
+                            <td style="text-align:right;">0</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>system event: cognitive game phase X</td>
+                            <td>Provide action / speech feedback</td>
+                            <td><span class="tag tag-green">S4_FEEDBACK</span></td>
+                            <td style="text-align:right;">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div style="display:flex; flex-direction:column; gap:20px;">
+            
+            <!-- OSNOVNE METRIKE -->
+            <div class="card">
+                <div class="card-header">
+                    <svg style="color:var(--primary-blue)" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Osnovne metrike
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-box">
+                        <span class="metric-val">3</span>
+                        <span class="metric-lbl">Korakov</span>
+                    </div>
+                    <div class="metric-box">
+                        <span class="metric-val green">0</span>
+                        <span class="metric-lbl">Pozitivnih</span>
+                    </div>
+                    <div class="metric-box">
+                        <span class="metric-val red">0</span>
+                        <span class="metric-lbl">Eskalacij</span>
+                    </div>
+                    <div class="metric-box">
+                        <span class="metric-val">0s</span>
+                        <span class="metric-lbl">Trajanje</span>
+                    </div>
+                    <div class="metric-box">
+                        <span class="metric-val">0%</span>
+                        <span class="metric-lbl">Pozitivni %</span>
+                    </div>
+                    <div class="metric-box">
+                        <span class="metric-val">3</span>
+                        <span class="metric-lbl">Triggerjev</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SUBJEKTIVNA OCENA -->
+            <div class="card">
+                <div class="card-header">
+                    <svg style="color:var(--primary-blue)" viewBox="0 0 24 24"><path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" stroke="currentColor" stroke-width="2" fill="currentColor"/></svg>
+                    <div>Subjektivna ocena<br><span style="font-weight:400; font-size:12px;">(uporabnik)</span></div>
+                </div>
+                <div class="rating-list">
+                    <div class="rating-item">
+                        <span>Podporen:</span>
+                        <div class="stars">
+                            <svg class="star-filled" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor"/></svg>
+                            <svg class="star-filled" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor"/></svg>
+                            <svg class="star-filled" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor"/></svg>
+                            <svg class="star-empty" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                            <svg class="star-empty" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                            <span class="rating-score">(3/5)</span>
+                        </div>
+                    </div>
+                    <div class="rating-item">
+                        <span>Razumljiv:</span>
+                        <div class="stars">
+                            <svg class="star-filled" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor"/></svg>
+                            <svg class="star-filled" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor"/></svg>
+                            <svg class="star-filled" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor"/></svg>
+                            <svg class="star-empty" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                            <svg class="star-empty" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                            <span class="rating-score">(3/5)</span>
+                        </div>
+                    </div>
+                    <div class="rating-item">
+                        <span>Nevsiljiv:</span>
+                        <div class="stars">
+                            <svg class="star-filled" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor"/></svg>
+                            <svg class="star-filled" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor"/></svg>
+                            <svg class="star-filled" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor"/></svg>
+                            <svg class="star-empty" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                            <svg class="star-empty" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                            <span class="rating-score">(3/5)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- POVZETEK -->
+            <div class="summary-box">
+                <div class="summary-title">Povzetek evalvacije</div>
+                <div class="summary-text">
+                    Seja delno ustreza profilu 'Mirna seja'. Prehod skozi stanja je bil učinkovit.
+                </div>
+            </div>
+            
+        </div>
+
+    </main>
+
+</body>
+</html>
