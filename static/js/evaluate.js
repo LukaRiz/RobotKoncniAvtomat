@@ -42,36 +42,14 @@ function renderSessionList() {
     }
     
     list.innerHTML = sessions.map(s => `
-        <div class="session-item ${selectedSessionId === s.id ? 'selected' : ''}" 
+        <div class="session-item ${selectedSessionId === s.id ? 'selected' : ''}"
              onclick="selectSession(${s.id})">
-            <div class="session-main">
-                <div class="session-info">
-                    <span class="session-id">Seja #${s.id}</span>
-                    <span class="session-date">${formatDate(s.started_at)}</span>
-                </div>
-                <div class="session-scenario-badge" title="${SCENARIO_NAMES[s.scenario_type] || 'Neznano'}">
-                    ${SCENARIO_ICONS[s.scenario_type] || ''}
-                </div>
+            <div class="session-info">
+                <span class="session-id">Seja #${s.id}</span>
+                <span class="session-date">${formatDate(s.started_at)}</span>
             </div>
-            <div class="session-stats">
-                <div class="session-stat">
-                    <div class="session-stat-value">${s.step_count}</div>
-                    <div class="session-stat-label">Korakov</div>
-                </div>
-                <div class="session-stat">
-                    <div class="session-stat-value">${s.escalation_count}</div>
-                    <div class="session-stat-label">Eskalacij</div>
-                </div>
-                <div class="session-stat">
-                    <div class="session-stat-value">${s.scenario_confidence}%</div>
-                    <div class="session-stat-label">Ujemanje</div>
-                </div>
-            </div>
-            <div class="session-badges">
-                <span class="${s.completed ? 'completed-badge' : 'incomplete-badge'}">
-                    ${s.completed ? '✓' : '...'}
-                </span>
-                ${s.has_evaluation ? '<span class="eval-badge">⭐</span>' : ''}
+            <div class="session-scenario">
+                <span class="scenario-name">${SCENARIO_NAMES[s.scenario_type] || 'Neznano'}</span>
             </div>
         </div>
     `).join('');
@@ -162,17 +140,7 @@ function displaySessionDetails(data) {
         </tr>
     `).join('');
     
-    // Povzetek naslov
-    const summary = document.getElementById('eval-summary');
-    const summaryTitle = document.getElementById('summary-title');
-    
-    if (session.completed) {
-        summary.classList.remove('failed');
-        summaryTitle.textContent = '📊 Povzetek evalvacije';
-    } else {
-        summary.classList.add('failed');
-        summaryTitle.textContent = '⚠️ Seja ni bila zaključena';
-    }
+    // Povzetek je zdaj inline v funkcionalni evalvaciji
 }
 
 function renderStars(rating) {
