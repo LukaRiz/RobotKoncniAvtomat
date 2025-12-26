@@ -14,41 +14,53 @@
 </head>
 <body>
     <div id="container">
-        <!-- LEVI DEL - CHAT OKNO -->
+        <!-- LEVI SIDEBAR - KONTROLNI GUMBI -->
+        <div id="control-sidebar">
+            <h3>Kontrola seje</h3>
+            <p class="sidebar-hint">Upravljajte s trenutno sejo</p>
+
+            <!-- KONTROLNI GUMBI -->
+            <div class="sidebar-buttons">
+                <button onclick="window.location.href='/evaluate'" class="sidebar-btn stats-btn" title="Statistika">
+                    Statistika
+                </button>
+                <button id="force-end-btn" onclick="forceEnd()" class="sidebar-btn end-btn">
+                    Zaključi sejo
+                </button>
+                <button id="reset-session" onclick="resetSession()" class="sidebar-btn reset-btn">
+                    Nova seja
+                </button>
+            </div>
+        </div>
+
+        <!-- SREDI DEL - CHAT OKNO -->
         <div id="chat-panel">
             <div id="chat-header">
                 <div class="header-text">
                     <h1>Robot – Kognitivni Trening</h1>
                     <span class="header-subtitle">Interaktivna simulacija</span>
                 </div>
-                <!-- Povezava do evalvacije -->
-                <a href="/evaluate" class="eval-link" title="Evalvacija">📊</a>
             </div>
             
             <!-- FSM DIAGRAM -->
             <div id="fsm-diagram">
                 <div class="fsm-state {{ 'active' if current_state == 'S0_GREETING' else '' }}" data-state="S0_GREETING">
-                    <span class="state-icon">👋</span>
                     <span class="state-name">Pozdrav</span>
                 </div>
                 <div class="fsm-arrow">→</div>
                 <div class="fsm-state {{ 'active' if current_state == 'S1_EXPLANATION' else '' }}" data-state="S1_EXPLANATION">
-                    <span class="state-icon">📖</span>
                     <span class="state-name">Razlaga</span>
                 </div>
                 <div class="fsm-arrow">→</div>
                 <div class="fsm-state {{ 'active' if current_state == 'S2_EXERCISE' else '' }}" data-state="S2_EXERCISE">
-                    <span class="state-icon">🎯</span>
                     <span class="state-name">Vaja</span>
                 </div>
                 <div class="fsm-arrow-down">↓</div>
                 <div class="fsm-state {{ 'active' if current_state == 'S3_BREAK' else '' }}" data-state="S3_BREAK">
-                    <span class="state-icon">☕</span>
                     <span class="state-name">Odmor</span>
                 </div>
                 <div class="fsm-arrow">→</div>
                 <div class="fsm-state final {{ 'active' if current_state == 'S4_FEEDBACK' else '' }}" data-state="S4_FEEDBACK">
-                    <span class="state-icon">✅</span>
                     <span class="state-name">Zaključek</span>
                 </div>
             </div>
@@ -90,15 +102,7 @@
         <div id="trigger-panel">
             <h3>Simuliraj Trigger</h3>
             <p class="trigger-hint">Kliknite na trigger za simulacijo uporabnikovega vedenja</p>
-            
-            <!-- TRENUTNO STANJE -->
-            <div id="current-state-display" class="state-{{ state_info.color }}">
-                <span class="state-display-icon">{{ state_info.icon }}</span>
-                <div class="state-display-text">
-                    <span class="state-display-label">Trenutno stanje:</span>
-                    <span class="state-display-name" id="current-state-name">{{ state_info.name }}</span>
-                </div>
-            </div>
+
             
             <!-- POZITIVNI TRIGGERJI -->
             <div class="trigger-group positive">
@@ -158,16 +162,6 @@
                     <button class="trigger-btn final-btn" onclick="sendTrigger('end of user speech')">end of user speech</button>
                     <button class="trigger-btn final-btn" onclick="sendTrigger('end of user movement')">end of user movement</button>
                 {% endif %}
-            </div>
-            
-            <!-- KONTROLNI GUMBI -->
-            <div class="control-buttons">
-                <button id="force-end-btn" onclick="forceEnd()" class="control-btn end-btn">
-                    🛑 Zaključi sejo
-                </button>
-                <button id="reset-session" onclick="resetSession()" class="control-btn reset-btn">
-                    🔄 Nova seja
-                </button>
             </div>
         </div>
     </div>

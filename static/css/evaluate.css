@@ -5,9 +5,9 @@ body {
 }
 
 #eval-container {
-    max-width: 1400px;
+    max-width: 2000px;
     margin: 0 auto;
-    padding: 24px;
+    padding: 20px;
 }
 
 .eval-header {
@@ -44,13 +44,22 @@ body {
 
 .eval-grid {
     display: grid;
-    grid-template-columns: 400px 1fr;
-    gap: 24px;
+    grid-template-columns: 320px 1fr;
+    gap: 20px;
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 900px) {
     .eval-grid {
         grid-template-columns: 1fr;
+    }
+
+    /* Na mobilnih napravah odstrani sticky za oba panela */
+    .eval-grid > .eval-panel:first-child,
+    .eval-grid > .eval-panel:nth-child(2) {
+        position: static;
+        height: auto;
+        max-height: none;
+        overflow: visible;
     }
 }
 
@@ -58,7 +67,25 @@ body {
     background: var(--color-surface);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-lg);
-    padding: 24px;
+    padding: 20px;
+}
+
+/* Levi panel (seznam sej) naj bo sticky */
+.eval-grid > .eval-panel:first-child {
+    position: sticky;
+    top: 24px;
+    height: fit-content;
+    max-height: calc(100vh - 120px);
+    overflow: hidden; /* Prepreči da content uhaja ven */
+}
+
+/* Desni panel (podrobnosti seje) naj bo sticky */
+.eval-grid > .eval-panel:nth-child(2) {
+    position: sticky;
+    top: 24px;
+    height: fit-content;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto; /* Dovoli scroll znotraj panela */
 }
 
 .eval-panel h2 {
@@ -79,7 +106,7 @@ body {
 
 /* Seznam sej */
 .session-list {
-    max-height: calc(100vh - 200px);
+    max-height: calc(100vh - 180px);
     overflow-y: auto;
 }
 
@@ -288,7 +315,7 @@ body {
 }
 
 .trace-container {
-    max-height: 300px;
+    max-height: 250px;
     overflow-y: auto;
     margin-bottom: 20px;
     border-radius: var(--radius-md);

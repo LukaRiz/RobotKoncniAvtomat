@@ -1,12 +1,12 @@
 // evaluate.js - JavaScript za stran evalvacije sej
 
-// Ikone scenarijev
+// Ikone scenarijev - odstranjene
 const SCENARIO_ICONS = {
-    calm: "😊",
-    confused: "🤔",
-    distracted: "👀",
-    stressed: "😰",
-    critical: "🚨"
+    calm: "",
+    confused: "",
+    distracted: "",
+    stressed: "",
+    critical: ""
 };
 
 const SCENARIO_NAMES = {
@@ -50,7 +50,7 @@ function renderSessionList() {
                     <span class="session-date">${formatDate(s.started_at)}</span>
                 </div>
                 <div class="session-scenario-badge" title="${SCENARIO_NAMES[s.scenario_type] || 'Neznano'}">
-                    ${SCENARIO_ICONS[s.scenario_type] || '❓'}
+                    ${SCENARIO_ICONS[s.scenario_type] || ''}
                 </div>
             </div>
             <div class="session-stats">
@@ -103,7 +103,7 @@ function displaySessionDetails(data) {
         const fsmMetrics = functional_evaluation.fsm_metrics;
         
         // Scenarij badge
-        document.getElementById('scenario-icon').textContent = scenario?.icon || '❓';
+        document.getElementById('scenario-icon').textContent = scenario?.icon || '';
         document.getElementById('scenario-name').textContent = scenario?.name || 'Neznano';
         document.getElementById('scenario-confidence').textContent = `${functional_evaluation.confidence}% ujemanje`;
         document.getElementById('scenario-description').textContent = scenario?.description || '';

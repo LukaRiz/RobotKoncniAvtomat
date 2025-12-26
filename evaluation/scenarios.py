@@ -8,7 +8,7 @@ REFERENCE_SCENARIOS = {
     "calm": {
         "name": "Mirna seja",
         "description": "Uporabnik je pozitiven in sodelujoč skozi celoten trening.",
-        "icon": "😊",
+        "icon": "",
         "expected_triggers": [
             "greet", "User smiles/laughs", "User smiles/laughs", 
             "end of user speech", "User smiles/laughs"
@@ -22,7 +22,7 @@ REFERENCE_SCENARIOS = {
     "confused": {
         "name": "Pogosto zmeden",
         "description": "Uporabnik potrebuje več ponovitev in pojasnil.",
-        "icon": "🤔",
+        "icon": "",
         "expected_triggers": [
             "greet", "Long silence after robot prompt", "long time being still",
             "Hand raised while looking at robot", "User smiles/laughs"
@@ -37,7 +37,7 @@ REFERENCE_SCENARIOS = {
     "distracted": {
         "name": "Odvrača pozornost",
         "description": "Uporabnik pogosto gleda drugam, potrebuje preusmeritev.",
-        "icon": "👀",
+        "icon": "",
         "expected_triggers": [
             "greet", "User looks away to another person", "User smiles/laughs",
             "User looks away to another person", "end of user movement"
@@ -51,7 +51,7 @@ REFERENCE_SCENARIOS = {
     "stressed": {
         "name": "Pod stresom",
         "description": "Uporabnik kaže znake stresa in preobremenjenosti.",
-        "icon": "😰",
+        "icon": "",
         "expected_triggers": [
             "greet", "User face stressed", "User leans back / crosses arms",
             "User face stressed", "User leans back / crosses arms"
@@ -65,7 +65,7 @@ REFERENCE_SCENARIOS = {
     "critical": {
         "name": "Kritična seja",
         "description": "Veliko eskalacij, seja zaključena predčasno.",
-        "icon": "🚨",
+        "icon": "",
         "expected_triggers": [
             "greet", "User face stressed", "User face stressed",
             "error", "User leans back / crosses arms"

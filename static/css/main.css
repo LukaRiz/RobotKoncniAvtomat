@@ -108,22 +108,114 @@ body {
 }
 
 /* ============================================
-   GLAVNI LAYOUT (60% - 40%)
+   GLAVNI LAYOUT (15% - 55% - 30%)
    ============================================ */
 #container {
     display: flex;
     height: 100vh;
-    max-width: 1600px;
+    max-width: 1800px;
     margin: 0 auto;
     padding: 20px;
-    gap: 20px;
+    gap: 15px;
 }
 
 /* ============================================
-   CHAT PANEL (LEVI DEL)
+   CONTROL SIDEBAR (LEVI DEL)
+   ============================================ */
+#control-sidebar {
+    flex: 0 0 15%;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-surface);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    padding: 20px;
+    overflow-y: auto;
+}
+
+#control-sidebar h3 {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+}
+
+.sidebar-hint {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    margin-bottom: 20px;
+}
+
+/* Sidebar Buttons */
+.sidebar-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sidebar-btn {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid transparent;
+    border-radius: var(--radius-md);
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    font-weight: 500;
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.sidebar-btn:active {
+    transform: scale(0.98);
+}
+
+/* Statistika gumb */
+.stats-btn {
+    background: var(--color-positive-bg);
+    border-color: var(--color-positive-border);
+    color: var(--color-positive-text);
+}
+
+.stats-btn:hover {
+    background: var(--color-positive-hover);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Zaključi gumb */
+.end-btn {
+    background: #fee2e2;
+    color: #dc2626;
+    border-color: #fca5a5;
+}
+
+.end-btn:hover {
+    background: #fecaca;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Nova seja gumb */
+.reset-btn {
+    background: #667788;
+    color: white;
+    border-color: #556677;
+}
+
+.reset-btn:hover {
+    background: #556677;
+    box-shadow: var(--shadow-sm);
+}
+
+/* ============================================
+   CHAT PANEL (SREDI DEL)
    ============================================ */
 #chat-panel {
-    flex: 0 0 60%;
+    flex: 0 0 55%;
     display: flex;
     flex-direction: column;
     background: var(--color-surface);
@@ -409,51 +501,6 @@ body {
     color: var(--color-text-primary);
 }
 
-/* ============================================
-   CONTROL BUTTONS
-   ============================================ */
-.control-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: auto;
-    padding-top: 20px;
-    border-top: 1px solid var(--color-border);
-}
-
-.control-btn {
-    flex: 1;
-    padding: 12px 16px;
-    border: none;
-    border-radius: var(--radius-md);
-    font-family: var(--font-family);
-    font-size: var(--font-size-base);
-    font-weight: 500;
-    cursor: pointer;
-    transition: all var(--transition-fast);
-}
-
-.control-btn:active {
-    transform: scale(0.98);
-}
-
-.end-btn {
-    background: #fee2e2;
-    color: #dc2626;
-    border: 2px solid #fca5a5;
-}
-
-.end-btn:hover {
-    background: #fecaca;
-}
-
-.reset-btn {
-    background: #667788;
-    color: white;
-}
-
-.reset-btn:hover {
-    background: #556677;
-}
 
 /* ============================================
    SPEECH ACT BADGE
@@ -478,21 +525,6 @@ body {
     border: 1px solid #fcd34d;
 }
 
-/* ============================================
-   EVAL LINK
-   ============================================ */
-.eval-link {
-    margin-left: auto;
-    font-size: 24px;
-    text-decoration: none;
-    opacity: 0.8;
-    transition: all var(--transition-fast);
-}
-
-.eval-link:hover {
-    opacity: 1;
-    transform: scale(1.1);
-}
 
 /* ============================================
    SUGGEST END NOTIFICATION
@@ -591,7 +623,7 @@ body {
    TRIGGER PANEL (DESNI DEL)
    ============================================ */
 #trigger-panel {
-    flex: 0 0 38%;
+    flex: 0 0 30%;
     display: flex;
     flex-direction: column;
     background: var(--color-surface);
@@ -849,19 +881,25 @@ body {
         padding: 10px;
         gap: 10px;
     }
-    
+
+    #control-sidebar,
     #chat-panel,
     #trigger-panel {
         flex: none;
         width: 100%;
     }
-    
-    #chat-panel {
-        height: 60vh;
+
+    #control-sidebar {
+        height: auto;
+        padding: 16px;
     }
-    
+
+    #chat-panel {
+        height: 50vh;
+    }
+
     #trigger-panel {
-        height: 38vh;
+        height: 40vh;
     }
 }
 
