@@ -17,7 +17,6 @@
         <!-- LEVI DEL - CHAT OKNO -->
         <div id="chat-panel">
             <div id="chat-header">
-                <div class="header-icon">🤖</div>
                 <div class="header-text">
                     <h1>Robot – Kognitivni Trening</h1>
                     <span class="header-subtitle">Interaktivna simulacija</span>
@@ -65,27 +64,22 @@
             <!-- STATISTIKA SEJE -->
             <div id="session-stats">
                 <div class="stat-item positive">
-                    <span class="stat-icon">😊</span>
                     <span class="stat-value" id="stat-positive">{{ statistics.positive_interactions }}</span>
                     <span class="stat-label">Pozitivnih</span>
                 </div>
                 <div class="stat-item negative">
-                    <span class="stat-icon">😟</span>
                     <span class="stat-value" id="stat-negative">{{ statistics.negative_interactions }}</span>
                     <span class="stat-label">Negativnih</span>
                 </div>
                 <div class="stat-item escalation">
-                    <span class="stat-icon">⚠️</span>
                     <span class="stat-value" id="stat-escalation">{{ statistics.total_escalations }}</span>
                     <span class="stat-label">Eskalacij</span>
                 </div>
                 <div class="stat-item steps">
-                    <span class="stat-icon">👣</span>
                     <span class="stat-value" id="stat-steps">{{ statistics.step_count }}</span>
                     <span class="stat-label">Korakov</span>
                 </div>
                 <div class="stat-item success">
-                    <span class="stat-icon">🎯</span>
                     <span class="stat-value" id="stat-success">{{ statistics.success_steps }}/5</span>
                     <span class="stat-label">Uspešnih</span>
                 </div>
@@ -108,7 +102,7 @@
             
             <!-- POZITIVNI TRIGGERJI -->
             <div class="trigger-group positive">
-                <h4>✨ Pozitivni signali</h4>
+                <h4>Pozitivni signali</h4>
                 {% if triggers.positive %}
                     {% for trigger in triggers.positive %}
                     <button class="trigger-btn positive-btn" onclick="sendTrigger('{{ trigger }}')">
@@ -123,7 +117,7 @@
             
             <!-- NEVTRALNI TRIGGERJI -->
             <div class="trigger-group neutral">
-                <h4>⏸️ Nevtralni signali</h4>
+                <h4>Nevtralni signali</h4>
                 {% if triggers.neutral %}
                     {% for trigger in triggers.neutral %}
                     <button class="trigger-btn neutral-btn" onclick="sendTrigger('{{ trigger }}')">
@@ -138,7 +132,7 @@
             
             <!-- NEGATIVNI TRIGGERJI -->
             <div class="trigger-group negative">
-                <h4>⚠️ Negativni signali</h4>
+                <h4>Negativni signali</h4>
                 {% if triggers.negative %}
                     {% for trigger in triggers.negative %}
                     <button class="trigger-btn negative-btn" onclick="sendTrigger('{{ trigger }}')">
@@ -153,7 +147,7 @@
             
             <!-- ZAKLJUČNI TRIGGERJI -->
             <div class="trigger-group final">
-                <h4>🏁 Zaključni signali</h4>
+                <h4>Zaključni signali</h4>
                 {% if triggers.final %}
                     {% for trigger in triggers.final %}
                     <button class="trigger-btn final-btn" onclick="sendTrigger('{{ trigger }}')">
@@ -181,7 +175,7 @@
     <!-- Notification za END stanje z evalvacijo -->
     <div id="end-notification" class="hidden">
         <div class="notification-content evaluation-modal">
-            <h3>🎉 Seja zaključena</h3>
+            <h3>Seja zaključena</h3>
             <p id="end-reason-text">Trening je bil uspešno zaključen.</p>
             
             <div id="final-stats">
