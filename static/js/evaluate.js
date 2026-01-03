@@ -84,7 +84,6 @@ function displaySessionDetails(data) {
         document.getElementById('scenario-icon').textContent = scenario?.icon || '';
         document.getElementById('scenario-name').textContent = scenario?.name || 'Neznano';
         document.getElementById('scenario-confidence').textContent = `${functional_evaluation.confidence}% ujemanje`;
-        document.getElementById('scenario-description').textContent = scenario?.description || '';
         
         // Nastavi barvo glede na scenarij
         const badge = document.getElementById('scenario-badge');

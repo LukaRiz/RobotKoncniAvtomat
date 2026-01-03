@@ -73,7 +73,7 @@ def handle_trigger():
 
     # 2) FSM prehod
     state_before = fsm.state
-    new_state = fsm.update_state(inferred_intent)
+    new_state = fsm.update_state(inferred_intent, trigger=trigger)
     total_escalations = fsm.total_escalations()
     step_number = fsm.step_count
 

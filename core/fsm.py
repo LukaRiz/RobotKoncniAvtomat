@@ -10,16 +10,26 @@ S2_EXERCISE = "S2_EXERCISE"               # izvajanje vaje (cikel)
 S3_BREAK = "S3_BREAK"                     # odmor / preusmeritev pozornosti
 S4_FEEDBACK = "S4_FEEDBACK"               # povratna informacija / zaključek
 
+# Negativni intenti - kažejo težave in povzročajo eskalacije
 NEGATIVE_INTENTS = {
     "User frustrated / overloaded",
     "Disengagement risk",
+    "User confused / waiting",  # Dodano: Long silence, long time being still
 }
 
+# Pozitivni intenti - kažejo dobro sodelovanje
 POSITIVE_INTENTS = {
     "Positive affect",
 }
 
+# Feedback intent - zaključni signal (vendar ne takoj, ampak po več korakih)
 FEEDBACK_INTENT = "Provide action / speech feedback"
+
+# Nevtralni intenti - ne vplivajo na eskalacije, vendar se tudi ne štejejo kot uspešni koraki
+NEUTRAL_INTENTS = {
+    "Attention shift",
+    "Request to speak/help",  # Nevtralen, razen če je "error" trigger
+}
 
 # Konfiguracija za zaključek
 MAX_ESCALATIONS = 3          # Po 3 eskalacijah ponudi zaključek
@@ -32,6 +42,7 @@ class RobotFSM:
     step_count: int = 0
     escalation_counts: dict = field(default_factory=lambda: defaultdict(int))
     success_steps: int = 0                 # Števec uspešnih korakov v S2_EXERCISE
+    explanation_steps: int = 0             # Števec korakov v razlagi (S1_EXPLANATION)
     positive_interactions: int = 0         # Skupno pozitivnih interakcij
     negative_interactions: int = 0         # Skupno negativnih interakcij
     should_suggest_end: bool = False       # Ali naj robot predlaga zaključek
@@ -43,6 +54,7 @@ class RobotFSM:
             "step_count": self.step_count,
             "escalation_counts": dict(self.escalation_counts),
             "success_steps": self.success_steps,
+            "explanation_steps": self.explanation_steps,
             "positive_interactions": self.positive_interactions,
             "negative_interactions": self.negative_interactions,
             "should_suggest_end": self.should_suggest_end,
@@ -59,29 +71,39 @@ class RobotFSM:
         esc = data.get("escalation_counts", {})
         fsm.escalation_counts = defaultdict(int, esc)
         fsm.success_steps = data.get("success_steps", 0)
+        fsm.explanation_steps = data.get("explanation_steps", 0)
         fsm.positive_interactions = data.get("positive_interactions", 0)
         fsm.negative_interactions = data.get("negative_interactions", 0)
         fsm.should_suggest_end = data.get("should_suggest_end", False)
         fsm.end_reason = data.get("end_reason", "")
         return fsm
 
-    def update_state(self, inferred_intent: str) -> str:
+    def update_state(self, inferred_intent: str, trigger: str = None) -> str:
         """
         Logika prehodov med stanji z izboljšano logiko zaključka.
         
         Zaključek se sproži:
         - Po MAX_ESCALATIONS eskalacijah (predlog zaključka)
         - Po MAX_SUCCESS_STEPS uspešnih korakih v S2_EXERCISE
-        - Ob eksplicitnem feedback intentu
+        - Ob eksplicitnem feedback intentu (vendar šele po več korakih)
         - Ob timeout-u (obravnava se v app.py)
+        
+        Args:
+            inferred_intent: Intent, ki ga robot "razume" iz triggerja
+            trigger: Originalni trigger (za posebne primere, npr. "error")
         """
         current = self.state
         next_state = current
         self.should_suggest_end = False
         self.end_reason = ""
 
+        # Poseben primer: "error" trigger z "Request to speak/help" intentom
+        # naj se obravnava kot negativen (escalation)
+        if trigger == "error" and inferred_intent == "Request to speak/help":
+            self.negative_interactions += 1
+            self.escalation_counts["Error"] += 1
         # Štej pozitivne/negativne interakcije
-        if inferred_intent in POSITIVE_INTENTS:
+        elif inferred_intent in POSITIVE_INTENTS:
             self.positive_interactions += 1
         elif inferred_intent in NEGATIVE_INTENTS:
             self.negative_interactions += 1
@@ -92,25 +114,44 @@ class RobotFSM:
         if current == S0_GREETING:
             # Po pozdravu se premaknemo v razlago naloge
             next_state = S1_EXPLANATION
+            # Reset explanation_steps ob prehodu v razlago
+            self.explanation_steps = 0
 
         elif current == S1_EXPLANATION:
+            # Štej korake v razlagi
+            self.explanation_steps += 1
+            
             if inferred_intent in POSITIVE_INTENTS:
+                # Pozitiven signal → gremo takoj v vajo
                 next_state = S2_EXERCISE
-            elif inferred_intent in NEGATIVE_INTENTS:
-                # ostanemo v razlagi, dodatna pojasnila
+                self.explanation_steps = 0  # Reset ob prehodu
+            elif inferred_intent in NEGATIVE_INTENTS or (trigger == "error" and inferred_intent == "Request to speak/help"):
+                # Negativen signal → ostanemo v razlagi, dodatna pojasnila
                 next_state = S1_EXPLANATION
-            else:
+            elif self.explanation_steps >= 2:
+                # Po vsaj 2 korakih v razlagi → gremo v vajo
                 next_state = S2_EXERCISE
+                self.explanation_steps = 0  # Reset ob prehodu
+            else:
+                # Preveč zgodaj → ostanemo v razlagi
+                next_state = S1_EXPLANATION
 
         elif current == S2_EXERCISE:
-            # Štej uspešne korake (ko ni negativen intent)
-            if inferred_intent not in NEGATIVE_INTENTS:
+            # Štej uspešne korake - samo pozitivni intenti ali feedback intenti
+            # (nevtralni in drugi intenti se NE štejejo kot uspešni koraki)
+            if inferred_intent in POSITIVE_INTENTS or inferred_intent == FEEDBACK_INTENT:
                 self.success_steps += 1
 
-            if inferred_intent in NEGATIVE_INTENTS:
+            if inferred_intent in NEGATIVE_INTENTS or (trigger == "error" and inferred_intent == "Request to speak/help"):
                 next_state = S3_BREAK
             elif inferred_intent == FEEDBACK_INTENT:
-                next_state = S4_FEEDBACK
+                # Feedback intent se šteje kot uspešen korak, vendar ne zaključi takoj
+                # Zaključi se šele, ko je dosežen MAX_SUCCESS_STEPS
+                if self.success_steps >= MAX_SUCCESS_STEPS:
+                    next_state = S4_FEEDBACK
+                    self.end_reason = "success_steps"
+                else:
+                    next_state = S2_EXERCISE
             elif self.success_steps >= MAX_SUCCESS_STEPS:
                 # Avtomatski zaključek po N uspešnih korakih
                 next_state = S4_FEEDBACK
