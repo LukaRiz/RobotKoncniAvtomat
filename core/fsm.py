@@ -25,7 +25,8 @@ POSITIVE_INTENTS = {
 # Feedback intent - zaključni signal (vendar ne takoj, ampak po več korakih)
 FEEDBACK_INTENT = "Provide action / speech feedback"
 
-# Nevtralni intenti - ne vplivajo na eskalacije, vendar se tudi ne štejejo kot uspešni koraki
+# Nevtralni intenti - ne vplivajo na eskalacije, AMPAK se štejejo kot uspešni koraki
+# (uporabnik dela nekaj, kar ni niti pozitivno niti negativno)
 NEUTRAL_INTENTS = {
     "Attention shift",
     "Request to speak/help",  # Nevtralen, razen če je "error" trigger
@@ -97,17 +98,22 @@ class RobotFSM:
         self.should_suggest_end = False
         self.end_reason = ""
 
+        # Spremenljivka za beleženje, ali je bil trenutni trigger negativen
+        is_negative_trigger = False
+
         # Poseben primer: "error" trigger z "Request to speak/help" intentom
         # naj se obravnava kot negativen (escalation)
         if trigger == "error" and inferred_intent == "Request to speak/help":
             self.negative_interactions += 1
             self.escalation_counts["Error"] += 1
+            is_negative_trigger = True
         # Štej pozitivne/negativne interakcije
         elif inferred_intent in POSITIVE_INTENTS:
             self.positive_interactions += 1
         elif inferred_intent in NEGATIVE_INTENTS:
             self.negative_interactions += 1
             self.escalation_counts[inferred_intent] += 1
+            is_negative_trigger = True
 
         # ----- PREHODI MED STANJI -----
 
@@ -137,9 +143,16 @@ class RobotFSM:
                 next_state = S1_EXPLANATION
 
         elif current == S2_EXERCISE:
-            # Štej uspešne korake - samo pozitivni intenti ali feedback intenti
-            # (nevtralni in drugi intenti se NE štejejo kot uspešni koraki)
-            if inferred_intent in POSITIVE_INTENTS or inferred_intent == FEEDBACK_INTENT:
+            # Štej uspešne korake:
+            # - Pozitivni intenti: uporabnik je zadovoljen
+            # - Nevtralni intenti: uporabnik dela nekaj (ni niti dobro niti slabo)
+            # - Feedback intenti: uporabnik je končal govor/gibanje
+            # Samo negativni intenti (vključno z error triggerjem) se NE štejejo kot uspešni koraki
+            is_success_step = (
+                (inferred_intent in POSITIVE_INTENTS or inferred_intent in NEUTRAL_INTENTS or inferred_intent == FEEDBACK_INTENT)
+                and not is_negative_trigger  # error trigger se ne šteje
+            )
+            if is_success_step:
                 self.success_steps += 1
 
             if inferred_intent in NEGATIVE_INTENTS or (trigger == "error" and inferred_intent == "Request to speak/help"):
@@ -163,21 +176,27 @@ class RobotFSM:
             # Reset success_steps po odmoru
             self.success_steps = 0
             
-            if inferred_intent in POSITIVE_INTENTS:
+            if inferred_intent in POSITIVE_INTENTS or inferred_intent in NEUTRAL_INTENTS:
+                # Pozitiven ali nevtralen signal → vrnemo se v vajo
                 next_state = S2_EXERCISE
             elif inferred_intent == FEEDBACK_INTENT:
+                # Feedback → zaključek
                 next_state = S4_FEEDBACK
-            else:
-                # Ostanemo v odmoru, če ni pozitivnega signala
+            elif inferred_intent in NEGATIVE_INTENTS or is_negative_trigger:
+                # Še en negativen signal → ostanemo v odmoru
                 next_state = S3_BREAK
+            else:
+                # Neznani intenti → vrnemo se v vajo
+                next_state = S2_EXERCISE
 
         elif current == S4_FEEDBACK:
             # končno stanje – ostanemo tam
             next_state = S4_FEEDBACK
 
         # ----- PREVERJANJE ESKALACIJ -----
+        # Predlagaj zaključek samo, če je bil trigger negativen in imamo >= MAX_ESCALATIONS eskalacij
         total_esc = self.total_escalations()
-        if total_esc >= MAX_ESCALATIONS and not self.is_final():
+        if is_negative_trigger and total_esc >= MAX_ESCALATIONS and not self.is_final():
             self.should_suggest_end = True
             self.end_reason = "max_escalations"
 

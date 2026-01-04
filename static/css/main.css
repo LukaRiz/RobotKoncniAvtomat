@@ -59,6 +59,12 @@
     --color-final-text: #004D00;
     --color-final-hover: #C0FFC0;
     
+    /* Feedback triggerji - vijolična/indigo za napredek */
+    --color-feedback-bg: #E8E4FF;
+    --color-feedback-border: #A5A0FF;
+    --color-feedback-text: #3D3080;
+    --color-feedback-hover: #DDD8FF;
+    
     /* Velikosti */
     --radius-sm: 6px;
     --radius-md: 10px;
@@ -658,8 +664,15 @@ body {
 .trigger-group h4 {
     font-size: var(--font-size-base);
     font-weight: 500;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     color: var(--color-text-secondary);
+}
+
+.trigger-subhint {
+    font-size: 11px;
+    color: var(--color-text-muted);
+    margin-bottom: 12px;
+    font-style: italic;
 }
 
 /* Trigger Buttons - Common */
@@ -731,6 +744,18 @@ body {
 
 .final-btn:hover {
     background: var(--color-final-hover);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Feedback gumbi - za napredek v vaji */
+.feedback-btn {
+    background: var(--color-feedback-bg);
+    border-color: var(--color-feedback-border);
+    color: var(--color-feedback-text);
+}
+
+.feedback-btn:hover {
+    background: var(--color-feedback-hover);
     box-shadow: var(--shadow-sm);
 }
 

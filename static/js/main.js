@@ -144,10 +144,15 @@ function updateUI(data) {
     }
     
     // Suggest end notification
+    const suggestNotification = document.getElementById("suggest-end-notification");
     if (data.should_suggest_end && !data.is_final) {
-        const suggestNotification = document.getElementById("suggest-end-notification");
         if (suggestNotification) {
             suggestNotification.classList.remove("hidden");
+        }
+    } else {
+        // Skrij obvestilo, če should_suggest_end ni True (npr. ko uporabnik klikne pozitiven trigger)
+        if (suggestNotification) {
+            suggestNotification.classList.add("hidden");
         }
     }
 }

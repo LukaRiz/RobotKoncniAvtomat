@@ -149,18 +149,19 @@
                 {% endif %}
             </div>
             
-            <!-- ZAKLJUČNI TRIGGERJI -->
-            <div class="trigger-group final">
-                <h4>Zaključni signali</h4>
-                {% if triggers.final %}
-                    {% for trigger in triggers.final %}
-                    <button class="trigger-btn final-btn" onclick="sendTrigger('{{ trigger }}')">
+            <!-- FEEDBACK TRIGGERJI -->
+            <div class="trigger-group feedback">
+                <h4>Feedback signali</h4>
+                <p class="trigger-subhint">Uporabnik je končal govor/gibanje → napredek v vaji</p>
+                {% if triggers.feedback %}
+                    {% for trigger in triggers.feedback %}
+                    <button class="trigger-btn feedback-btn" onclick="sendTrigger('{{ trigger }}')">
                         {{ trigger }}
                     </button>
                     {% endfor %}
                 {% else %}
-                    <button class="trigger-btn final-btn" onclick="sendTrigger('end of user speech')">end of user speech</button>
-                    <button class="trigger-btn final-btn" onclick="sendTrigger('end of user movement')">end of user movement</button>
+                    <button class="trigger-btn feedback-btn" onclick="sendTrigger('end of user speech')">end of user speech</button>
+                    <button class="trigger-btn feedback-btn" onclick="sendTrigger('end of user movement')">end of user movement</button>
                 {% endif %}
             </div>
         </div>

@@ -54,6 +54,24 @@ def get_all_sessions():
     return jsonify(result)
 
 
+def is_positive_trigger(trigger):
+    """Preveri, ali je trigger pozitiven (uporablja isto logiko kot helpers.py)."""
+    if not trigger:
+        return False
+    lt = trigger.lower()
+    return any(kw in lt for kw in ["smiles", "laughs", "greet", "positive"])
+
+
+def is_negative_trigger(trigger):
+    """Preveri, ali je trigger negativen (uporablja isto logiko kot helpers.py)."""
+    if not trigger:
+        return False
+    lt = trigger.lower()
+    return any(kw in lt for kw in ["stressed", "leans back", "crosses arms", 
+                                    "error", "silence", "still", "away", "frustrated", 
+                                    "overloaded", "disengagement", "decreasing engagement"])
+
+
 @evaluate_bp.route("/api/session/<int:session_id>", methods=["GET"])
 def get_session_details(session_id):
     """
@@ -65,12 +83,9 @@ def get_session_details(session_id):
     
     interactions = InteractionLog.query.filter_by(session_id=session_id).order_by(InteractionLog.step_number).all()
     
-    # Izračunaj statistiko
-    positive_intents = ["Engaged", "Positive Affect", "Acknowledgment", "Ready", "Completion", "Greeting"]
-    negative_intents = ["Confusion", "Stress", "Frustration", "Disengagement", "Overload"]
-    
-    positive_count = sum(1 for i in interactions if i.inferred_intent in positive_intents)
-    negative_count = sum(1 for i in interactions if i.inferred_intent in negative_intents)
+    # Izračunaj statistiko - uporabljamo triggerje (ne intente), kot v glavnem chatu
+    positive_count = sum(1 for i in interactions if is_positive_trigger(i.trigger))
+    negative_count = sum(1 for i in interactions if is_negative_trigger(i.trigger))
     total = len(interactions)
     escalation_count = max([i.escalation_count for i in interactions], default=0)
     triggers_used = set([i.trigger for i in interactions])

@@ -58,32 +58,49 @@ def save_conversation(conv):
 
 def build_trigger_groups(rules):
     """
-    Tvoje gumbe razdelimo na pozitivne / nevtralne / negativne.
-    Preprosto na podlagi trigger stringov.
+    Gumbe razdelimo na pozitivne / nevtralne / negativne / feedback
+    na podlagi Inferred Intent iz pravil.
+    
+    Grupiranje:
+    - Pozitivni: Positive affect
+    - Nevtralni: Attention shift, Request to speak/help (razen error)
+    - Negativni: User frustrated/overloaded, Disengagement risk, User confused/waiting, error
+    - Feedback: Provide action / speech feedback
     """
-    triggers = rules.get_triggers()
-
     positive = []
     neutral = []
     negative = []
+    feedback = []
+    
+    # Mapiranje intentov na skupine
+    POSITIVE_INTENTS = {"Positive affect"}
+    NEUTRAL_INTENTS = {"Attention shift", "Request to speak/help"}
+    NEGATIVE_INTENTS = {"User frustrated / overloaded", "Disengagement risk", "User confused / waiting"}
+    FEEDBACK_INTENT = "Provide action / speech feedback"
 
-    for t in triggers:
-        lt = t.lower()
-        # Positive triggers
-        if any(kw in lt for kw in ["smiles", "laughs", "greet", "positive"]):
-            positive.append(t)
-        # Negative triggers
-        elif any(kw in lt for kw in ["stressed", "leans back", "crosses arms", 
-                                      "error", "silence", "still", "away"]):
-            negative.append(t)
-        # Neutral triggers
+    for rule in rules.rules:
+        trigger = rule["Trigger"]
+        intent = rule.get("Inferred Intent", "")
+        
+        # Posebni primer: "error" trigger je negativen, čeprav ima Request to speak/help intent
+        if trigger == "error":
+            negative.append(trigger)
+        elif intent == FEEDBACK_INTENT:
+            feedback.append(trigger)
+        elif intent in POSITIVE_INTENTS:
+            positive.append(trigger)
+        elif intent in NEGATIVE_INTENTS:
+            negative.append(trigger)
+        elif intent in NEUTRAL_INTENTS:
+            neutral.append(trigger)
         else:
-            neutral.append(t)
+            # Neznani intenti gredo v nevtralne
+            neutral.append(trigger)
 
     return {
-        "positive": positive,
-        "neutral": neutral,
-        "negative": negative,
-        "final": [],  # če je prazno, index.html pokaže default gumbe
+        "positive": sorted(positive),
+        "neutral": sorted(neutral),
+        "negative": sorted(negative),
+        "feedback": sorted(feedback),
     }
 
