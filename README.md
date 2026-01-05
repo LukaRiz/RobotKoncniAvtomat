@@ -1,5 +1,12 @@
-Pred pričetkom v terminalu, najlažje kar v Visual Studio Code, ki direktno kaže na mapo projekta napišemo: 
 
+
+Program je vedno dostopen tudi preko [https://robotkoncniavtomat.onrender.com](https://robotkoncniavtomat.onrender.com)
+
+Zaradi specifike brezplačnega gostovanja bo potrebno počakati okoli 1min, da se program požene. 
+
+# **Lokalno delovanje**
+
+Pred pričetkom v terminalu, najlažje kar v Visual Studio Code, ki direktno kaže na mapo projekta napišemo:
 
 ```
 pip install -r requirements.txt
